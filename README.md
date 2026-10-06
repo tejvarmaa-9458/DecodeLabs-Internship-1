@@ -159,7 +159,7 @@ This project is licensed under the **Apache License 2.0**. See the [LICENSE](LIC
 B.Tech 2nd Year, NIAT | Decode Labs Intern
 
 - GitHub: [@tejvarmaa-9458](https://github.com/tejvarmaa-9458)
-- LinkedIn: [Mudunuri Tej Varma](www.linkedin.com/in/mudunuri-tej-varma-794594368)
+- LinkedIn: [Mudunuri Tej Varma](https://www.linkedin.com/in/mudunuri-tej-varma-794594368)
 
 ---
 
