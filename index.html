@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Practice App</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+      }
+      .hidden { display: none !important; }
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+      .panel {
+        background: #111827;
+        border: 1px solid #374151;
+        border-radius: 16px;
+        padding: 24px;
+      }
+      .subject-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .subject-btn {
+        background: #1f2937;
+        color: #f3f4f6;
+        border: 1px solid #4b5563;
+        border-radius: 10px;
+        padding: 12px 16px;
+        cursor: pointer;
+      }
+      .subject-btn.active {
+        background: #2563eb;
+        border-color: #3b82f6;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #1e293b;
+        border-radius: 999px;
+        padding: 8px 12px;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .primary {
+        background: #2563eb;
+        color: white;
+      }
+      .secondary {
+        background: #374151;
+        color: white;
+      }
+      .danger {
+        background: #dc2626;
+        color: white;
+      }
+      .recording-active {
+        background: #ef4444;
+        color: white;
+      }
+      .status {
+        margin-top: 16px;
+        color: #cbd5e1;
+      }
+      .bubble {
+        display: inline-block;
+        background: #1d4ed8;
+        color: white;
+        border-radius: 999px;
+        padding: 8px 12px;
+        margin-top: 16px;
+      }
+      svg { width: 120px; height: 120px; }
+      .score-ring {
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+      }
+      .score-ring circle {
+        fill: none;
+        stroke: #374151;
+        stroke-width: 10;
+      }
+      .score-ring .progress {
+        stroke: #22c55e;
+        stroke-linecap: round;
+        stroke-dasharray: 301.6;
+        stroke-dashoffset: 301.6;
+        transition: stroke-dashoffset 0.5s ease;
+      }
+      #scoreValue {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 22px;
+        font-weight: bold;
+      }
+      .score-wrap {
+        position: relative;
+        display: inline-block;
+        width: 120px;
+        height: 120px;
+      }
+      .feedback-box {
+        margin-top: 20px;
+        background: #0f172a;
+        border: 1px solid #374151;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .small {
+        font-size: 13px;
+        color: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="welcomeState" class="panel">
+        <h2>Choose a subject</h2>
+        <div class="subject-grid">
+          <button class="subject-btn" data-subject="Self Introduction">Self Introduction</button>
+          <button class="subject-btn" data-subject="Generative AI">Generative AI</button>
+          <button class="subject-btn" data-subject="Python">Python</button>
+          <button class="subject-btn" data-subject="English">English</button>
+          <button class="subject-btn" data-subject="HTML">HTML</button>
+          <button class="subject-btn" data-subject="CSS">CSS</button>
+        </div>
+      </div>
+
+      <div id="interviewState" class="panel hidden">
+        <div class="header">
+          <div class="badge">
+            <span id="subjectIcon" class="fas fa-user"></span>
+            <strong id="subjectBadge">Subject</strong>
+          </div>
+          <div class="small">Question <span id="questionNum">1</span></div>
+        </div>
+
+        <div id="speakingBubble" class="bubble hidden">Listening...</div>
+
+        <div class="controls">
+          <button id="startInterviewBtn" class="primary">Start Interview</button>
+          <button id="recordBtn" class="secondary hidden" type="button" disabled>
+            <span id="micIcon">🎙️</span>
+            <span id="stopIcon" class="hidden">■</span>
+            Record
+          </button>
+          <button id="submitBtn" class="primary hidden" type="button" disabled>Submit Answer</button>
+          <button id="endInterviewBtn" class="secondary" type="button" disabled>End Interview</button>
+          <button id="newInterviewBtn" class="secondary" type="button">New Interview</button>
+        </div>
+
+        <div id="recordingStatus" class="status">Click Start Interview to begin</div>
+      </div>
+
+      <div id="feedbackSection" class="panel hidden" style="margin-top:20px;">
+        <div id="getFeedbackArea">
+          <button id="getFeedbackBtn" class="primary">Get Feedback</button>
+        </div>
+
+        <div id="feedbackContent" class="feedback-box hidden">
+          <div class="header">
+            <h3 id="feedbackSubject">Feedback</h3>
+            <div class="score-wrap">
+              <svg class="score-ring" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="48"></circle>
+                <circle id="scoreCircle" class="progress" cx="60" cy="60" r="48"></circle>
+              </svg>
+              <div id="scoreValue">0</div>
+            </div>
+          </div>
+          <p><strong>Feedback:</strong> <span id="feedbackText">No feedback available</span></p>
+          <p><strong>Areas of improvement:</strong> <span id="improvementText">No suggestions available</span></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="/index.js"></script>
+  </body>
+</html>
